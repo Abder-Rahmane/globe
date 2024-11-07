@@ -1,0 +1,73 @@
+<canvas
+  id="cobe"
+  style="width: 500px; height: 500px"
+  width="1000"
+  height="1000"
+></canvas>
+
+<script type="module">
+  import createGlobe from 'https://cdn.skypack.dev/cobe'
+
+  const ROTATION_SPEED = 0.001; 
+
+  let canvas = document.getElementById("cobe")
+  let isDragging = false
+  let lastMouseX, lastMouseY
+  let phi = 0, theta = 0
+
+  canvas.addEventListener('mousedown', (e) => {
+    isDragging = true
+    lastMouseX = e.clientX
+    lastMouseY = e.clientY
+    canvas.style.cursor = 'grabbing';
+  })
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false
+    canvas.style.cursor = 'grab';
+  })
+
+  canvas.addEventListener('mousemove', (e) => {
+    if (!isDragging) return
+
+    const deltaX = e.clientX - lastMouseX
+    const deltaY = e.clientY - lastMouseY
+    lastMouseX = e.clientX
+    lastMouseY = e.clientY
+    
+    theta += deltaY * 0.01
+    phi += deltaX * 0.01
+  })
+  
+
+  const globe = createGlobe(canvas, {
+    devicePixelRatio: 2,
+    width: 1000,
+    height: 1000,
+    dark: 1,
+    diffuse: 2,
+    scale: 1.2,
+    mapSamples: 16000,
+    mapBrightness: 12,
+    baseColor: [1, 1, 1],
+    markerColor: [0.5, 0, 0.5],  
+    glowColor: [1, 1, 1],
+    offset: [0, 0],
+    markers: [
+      { location: [37.7595, -122.4367], size: 0.05, label: "Entreprise 1" }, 
+      { location: [40.7128, -74.006], size: 0.05, label: "Entreprise 2" }, 
+      { location: [-14.2350, -51.9253], size: 0.05, label: "Entreprise 3" }, 
+      { location: [48.8566, 2.3522], size: 0.05, label: "Entreprise 4" },
+     
+    ],
+    onRender: (state) => {
+      if (!isDragging) {
+        phi += ROTATION_SPEED;
+      }
+      
+      state.phi = phi;
+      state.theta = theta;
+    },
+  })
+
+</script>
